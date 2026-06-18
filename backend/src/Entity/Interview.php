@@ -6,11 +6,15 @@ use App\Repository\InterviewRepository;
 use App\Enum\Interview\InterviewType;
 use DateTimeImmutable;
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['interview:read']],
+    denormalizationContext: ['groups' => ['interview:write']]
+)]
 #[ORM\Entity(repositoryClass: InterviewRepository::class)]
 #[ORM\Table(name: 'interviews')]
 class Interview
@@ -18,26 +22,33 @@ class Interview
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['interview:read'])]
     private ?int $id = null;
 
     #[Assert\NotNull]
     #[ORM\Column]
+    #[Groups(['interview:read', 'interview:write'])]
     private ?DateTimeImmutable $scheduledAt = null;
 
     #[ORM\Column(length: 50, enumType: InterviewType::class)]
+    #[Groups(['interview:read', 'interview:write'])]
     private ?InterviewType $type = InterviewType::Video;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['interview:read', 'interview:write'])]
     private ?string $notes = null;
 
     #[ORM\Column]
+    #[Groups(['interview:read'])]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['interview:read'])]
     private ?DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'interviews')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['interview:read', 'interview:write'])]
     private ?Application $application = null;
 
     public function __construct()

@@ -6,13 +6,17 @@ use App\Repository\ApplicationRepository;
 use App\Enum\Application\ApplicationStatus;
 use DateTimeImmutable;
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['application:read']],
+    denormalizationContext: ['groups' => ['application:write']],
+)]
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
 #[ORM\Table(name: 'applications')]
 class Application
@@ -20,43 +24,54 @@ class Application
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['application:read'])]
     private ?int $id = null;
 
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
+    #[Groups(['application:read', 'application:write'])]
     private ?string $title = null;
 
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
+    #[Groups(['application:read', 'application:write'])]
     private ?string $company = null;
 
     #[Assert\Url]
     #[ORM\Column(length: 500, nullable: true)]
+    #[Groups(['application:read', 'application:write'])]
     private ?string $jobUrl = null;
 
     #[ORM\Column(length: 50, enumType: ApplicationStatus::class)]
+    #[Groups(['application:read', 'application:write'])]
     private ?ApplicationStatus $status = ApplicationStatus::Applied;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['application:read', 'application:write'])]
     private ?DateTimeImmutable $appliedAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['application:read', 'application:write'])]
     private ?string $notes = null;
 
     #[ORM\Column]
+    #[Groups(['application:read'])]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['application:read'])]
     private ?DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['application:read', 'application:write'])]
     private ?User $user = null;
 
     /**
      * @var Collection<int, Interview>
      */
     #[ORM\OneToMany(targetEntity: Interview::class, mappedBy: 'application')]
+    #[Groups(['application:read'])]
     private Collection $interviews;
 
     public function __construct()
