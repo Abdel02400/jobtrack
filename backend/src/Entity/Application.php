@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ApplicationRepository;
 use App\Enum\Application\ApplicationStatus;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -49,9 +51,16 @@ class Application
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    /**
+     * @var Collection<int, Interview>
+     */
+    #[ORM\OneToMany(targetEntity: Interview::class, mappedBy: 'application')]
+    private Collection $interviews;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
+        $this->interviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,6 +172,35 @@ class Application
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Interview>
+     */
+    public function getInterviews(): Collection
+    {
+        return $this->interviews;
+    }
+
+    public function addInterview(Interview $interview): static
+    {
+        if (!$this->interviews->contains($interview)) {
+            $this->interviews->add($interview);
+            $interview->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInterview(Interview $interview): static
+    {
+        if ($this->interviews->removeElement($interview)) {
+            if ($interview->getApplication() === $this) {
+                $interview->setApplication(null);
+            }
+        }
 
         return $this;
     }
