@@ -7,6 +7,9 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
+      - backend_vendor:/app/vendor
+      - backend_var:/app/var
+      - backend_public_bundles:/app/public/bundles
     ports:
       - "${BACKEND_PORT}:80"
     environment:
@@ -28,3 +31,6 @@ services:
 
 volumes:
   database_data:
+  backend_vendor:
+  backend_var:
+  backend_public_bundles:
