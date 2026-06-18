@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\InterviewRepository;
 use App\Enum\Interview\InterviewType;
 use DateTimeImmutable;
-use ApiPlatform\Metadata\ApiResource;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ApiResource(
     normalizationContext: ['groups' => ['interview:read']],
