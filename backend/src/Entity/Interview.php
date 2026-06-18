@@ -5,10 +5,12 @@ namespace App\Entity;
 use App\Repository\InterviewRepository;
 use App\Enum\Interview\InterviewType;
 use DateTimeImmutable;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: InterviewRepository::class)]
 #[ORM\Table(name: 'interviews')]
 class Interview
