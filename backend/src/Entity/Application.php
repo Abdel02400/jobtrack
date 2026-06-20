@@ -4,10 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\GetCollection;
+use App\Enum\Security\Application\ApplicationPermission;
 use App\State\Application\ApplicationProcessor;
 use App\Repository\ApplicationRepository;
 use App\Enum\Application\ApplicationStatus;
@@ -21,14 +22,22 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(),
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+        ),
+        new Get(
+            security: "is_granted('" . ApplicationPermission::View->value . "', object)",
+        ),
         new Post(
             security: "is_granted('ROLE_USER')",
             processor: ApplicationProcessor::class,
         ),
-        new Patch(),
-        new Delete(),
+        new Patch(
+            security: "is_granted('" . ApplicationPermission::Edit->value . "', object)",
+        ),
+        new Delete(
+            security: "is_granted('" . ApplicationPermission::Delete->value . "', object)",
+        ),
     ],
     normalizationContext: ['groups' => ['application:read']],
     denormalizationContext: ['groups' => ['application:write']],
