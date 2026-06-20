@@ -26,11 +26,41 @@ Application de suivi de candidatures.
 
 ## Installation
 
-Voir la section Installation.
+### Configuration
 
-## Démarrage
+Copier :
 
-Voir la section Démarrage.
+```bash
+backend/.env.example
+```
+
+vers :
+
+```bash
+backend/.env.local
+```
+
+Puis renseigner les variables nécessaires.
+
+### Initialiser le projet
+
+```powershell
+.\scripts\setup.ps1
+```
+
+Ce script :
+- démarre les containers Docker
+- installe les dépendances Composer
+- génère les clés JWT si elles n'existent pas
+- exécute les migrations Doctrine
+
+## Démarrage quotidien
+
+```powershell
+.\scripts\dev.ps1
+```
+
+Ce script démarre les containers Docker existants sans relancer toute l'installation.
 
 ## URLs
 
