@@ -3,6 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use App\State\Application\ApplicationProcessor;
 use App\Repository\ApplicationRepository;
 use App\Enum\Application\ApplicationStatus;
 use DateTimeImmutable;
@@ -14,6 +20,16 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Post(
+            security: "is_granted('ROLE_USER')",
+            processor: ApplicationProcessor::class,
+        ),
+        new Patch(),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['application:read']],
     denormalizationContext: ['groups' => ['application:write']],
 )]
@@ -64,7 +80,7 @@ class Application
 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['application:read', 'application:write'])]
+    #[Groups(['application:read'])]
     private ?User $user = null;
 
     /**
