@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
+use App\Controller\Auth\MeController;
 use App\Dto\Auth\RegisterInput;
 use App\State\Auth\RegisterProcessor;
 use App\Repository\UserRepository;
@@ -19,6 +21,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
+        new Get(
+            uriTemplate: '/me',
+            controller: MeController::class,
+            read: false,
+            name: 'api_me',
+        ),
         new Post(
             uriTemplate: '/register',
             input: RegisterInput::class,
