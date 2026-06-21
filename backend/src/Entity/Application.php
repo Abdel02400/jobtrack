@@ -13,6 +13,7 @@ use App\State\Application\ApplicationCollectionProvider;
 use App\State\Application\ApplicationProcessor;
 use App\Repository\ApplicationRepository;
 use App\Enum\Application\ApplicationStatus;
+use App\State\Application\ApplicationUpdateProcessor;
 use DateTimeImmutable;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -36,6 +37,7 @@ use Doctrine\ORM\Mapping as ORM;
         ),
         new Patch(
             security: "is_granted('" . ApplicationPermission::Edit->value . "', object)",
+            processor: ApplicationUpdateProcessor::class,
         ),
         new Delete(
             security: "is_granted('" . ApplicationPermission::Delete->value . "', object)",
