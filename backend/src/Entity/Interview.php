@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Enum\Security\Interview\InterviewPermission;
 use App\Enum\Interview\InterviewType;
 use App\Repository\InterviewRepository;
+use App\State\Interview\InterviewCollectionProvider;
 use App\State\Interview\InterviewProcessor;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -23,6 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             security: "is_granted('ROLE_USER')",
+            provider: InterviewCollectionProvider::class,
         ),
         new Get(
             security: "is_granted('" . InterviewPermission::View->value . "', object)",
