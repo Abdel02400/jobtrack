@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Interview;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,6 +27,20 @@ class InterviewRepository extends ServiceEntityRepository
             ->setParameter('user', $user)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function findUpcomingByUser(User $user, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('i')
+            ->innerJoin('i.application', 'a')
+            ->where('a.user = :user')
+            ->andWhere('i.scheduledAt > :now')
+            ->setParameter('user', $user)
+            ->setParameter('now', new DateTimeImmutable())
+            ->orderBy('i.scheduledAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**
