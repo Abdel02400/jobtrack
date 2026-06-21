@@ -3,8 +3,15 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\InterviewRepository;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use App\Enum\Security\Interview\InterviewPermission;
 use App\Enum\Interview\InterviewType;
+use App\Repository\InterviewRepository;
+use App\State\Interview\InterviewProcessor;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +20,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ApiResource(
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+        ),
+        new Get(
+            security: "is_granted('" . InterviewPermission::View->value . "', object)",
+        ),
+        new Post(
+            security: "is_granted('ROLE_USER')",
+            processor: InterviewProcessor::class,
+        ),
+        new Patch(
+            security: "is_granted('" . InterviewPermission::Edit->value . "', object)",
+        ),
+        new Delete(
+            security: "is_granted('" . InterviewPermission::Delete->value . "', object)",
+        ),
+    ],
     normalizationContext: ['groups' => ['interview:read']],
     denormalizationContext: ['groups' => ['interview:write']]
 )]
