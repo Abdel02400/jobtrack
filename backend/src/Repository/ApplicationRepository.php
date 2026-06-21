@@ -52,6 +52,33 @@ class ApplicationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function findByFilters(
+        User $user,
+        ?ApplicationStatus $status,
+        ?string $company,
+    ): array {
+        $qb = $this->createQueryBuilder('a')
+            ->where('a.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('a.createdAt', 'DESC');
+
+        if ($status !== null) {
+            $qb
+                ->andWhere('a.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        if ($company !== null && trim($company) !== '') {
+            $qb
+                ->andWhere('LOWER(a.company) LIKE :company')
+                ->setParameter('company', '%' . mb_strtolower(trim($company)) . '%');
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Application[] Returns an array of Application objects
     //     */

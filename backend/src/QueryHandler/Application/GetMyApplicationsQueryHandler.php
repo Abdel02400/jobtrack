@@ -14,9 +14,10 @@ final readonly class GetMyApplicationsQueryHandler
 
     public function __invoke(GetMyApplicationsQuery $query): array
     {
-        return $this->applicationRepository->findBy(
-            ['user' => $query->user],
-            ['createdAt' => 'DESC']
+        return $this->applicationRepository->findByFilters(
+            user: $query->user,
+            status: $query->status,
+            company: $query->company,
         );
     }
 }

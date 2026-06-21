@@ -4,8 +4,8 @@ namespace App\State\Application;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\Application;
 use App\Entity\User;
+use App\Enum\Application\ApplicationStatus;
 use App\Query\Application\GetMyApplicationsQuery;
 use App\QueryHandler\Application\GetMyApplicationsQueryHandler;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -27,6 +27,17 @@ final readonly class ApplicationCollectionProvider implements ProviderInterface
             throw new UnauthorizedHttpException('Bearer', 'You must be authenticated.');
         }
 
-        return ($this->handler)(new GetMyApplicationsQuery($user));
+        $status = isset($context['filters']['status'])
+        ? ApplicationStatus::tryFrom($context['filters']['status'])
+        : null;
+        $company = $context['filters']['company'] ?? null;
+
+        return ($this->handler)(
+            new GetMyApplicationsQuery(
+                user: $user,
+                status: $status,
+                company: $company,
+            ),
+        );
     }
 }
