@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\GetCollection;
 use App\Enum\Security\Application\ApplicationPermission;
+use App\State\Application\ApplicationCollectionProvider;
 use App\State\Application\ApplicationProcessor;
 use App\Repository\ApplicationRepository;
 use App\Enum\Application\ApplicationStatus;
@@ -24,6 +25,7 @@ use Doctrine\ORM\Mapping as ORM;
     operations: [
         new GetCollection(
             security: "is_granted('ROLE_USER')",
+            provider: ApplicationCollectionProvider::class,
         ),
         new Get(
             security: "is_granted('" . ApplicationPermission::View->value . "', object)",
