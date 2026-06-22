@@ -11,6 +11,8 @@ final readonly class GetMyApplicationsQuery
         public User $user,
         public ?ApplicationStatus $status = null,
         public ?string $company = null,
+        public int $page = 1,
+        public int $itemsPerPage = 10,
     ) {
     }
 }

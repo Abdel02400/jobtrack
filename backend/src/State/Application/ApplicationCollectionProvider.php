@@ -31,12 +31,16 @@ final readonly class ApplicationCollectionProvider implements ProviderInterface
         ? ApplicationStatus::tryFrom($context['filters']['status'])
         : null;
         $company = $context['filters']['company'] ?? null;
+        $page = max(1, (int) ($context['filters']['page'] ?? 1));
+        $itemsPerPage = 1;
 
         return ($this->handler)(
             new GetMyApplicationsQuery(
                 user: $user,
                 status: $status,
                 company: $company,
+                page: $page,
+                itemsPerPage: $itemsPerPage
             ),
         );
     }

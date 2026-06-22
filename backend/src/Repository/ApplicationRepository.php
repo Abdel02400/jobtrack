@@ -56,6 +56,8 @@ class ApplicationRepository extends ServiceEntityRepository
         User $user,
         ?ApplicationStatus $status,
         ?string $company,
+        int $page,
+        int $itemsPerPage,
     ): array {
         $qb = $this->createQueryBuilder('a')
             ->where('a.user = :user')
@@ -74,7 +76,11 @@ class ApplicationRepository extends ServiceEntityRepository
                 ->setParameter('company', '%' . mb_strtolower(trim($company)) . '%');
         }
 
+        $offset = ($page - 1) * $itemsPerPage;
+
         return $qb
+            ->setFirstResult($offset)
+            ->setMaxResults($itemsPerPage)
             ->getQuery()
             ->getResult();
     }

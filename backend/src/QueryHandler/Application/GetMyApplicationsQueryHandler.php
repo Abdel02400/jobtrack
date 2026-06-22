@@ -18,6 +18,8 @@ final readonly class GetMyApplicationsQueryHandler
             user: $query->user,
             status: $query->status,
             company: $query->company,
+            page: $query->page,
+            itemsPerPage: $query->itemsPerPage,
         );
     }
 }
