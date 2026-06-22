@@ -43,6 +43,24 @@ class InterviewRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return Interview[]
+     */
+    public function findScheduledInNext24Hours(): array
+    {
+        $now = new DateTimeImmutable();
+        $tomorrow = $now->modify('+24 hours');
+
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.scheduledAt >= :now')
+            ->andWhere('i.scheduledAt <= :tomorrow')
+            ->setParameter('now', $now)
+            ->setParameter('tomorrow', $tomorrow)
+            ->orderBy('i.scheduledAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Interview[] Returns an array of Interview objects
     //     */
