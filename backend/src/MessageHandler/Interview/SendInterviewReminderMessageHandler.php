@@ -5,6 +5,8 @@ namespace App\MessageHandler\Interview;
 use App\Message\Interview\SendInterviewReminderMessage;
 use App\Repository\InterviewRepository;
 use DateTimeImmutable;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,6 +18,7 @@ final readonly class SendInterviewReminderMessageHandler
         private InterviewRepository $interviewRepository,
         private LoggerInterface $logger,
         private EntityManagerInterface $entityManager,
+        private MailerInterface $mailer,
     ) {
     }
 
@@ -45,6 +48,29 @@ final readonly class SendInterviewReminderMessageHandler
             'scheduledAt' => $interview->getScheduledAt()?->format(DATE_ATOM),
             'company' => $interview->getApplication()?->getCompany(),
         ]);
+
+        $user = $interview->getApplication()?->getUser();
+        $recipient = $user?->getEmail();
+
+        if ($recipient === null) {
+            $this->logger->warning('Interview reminder skipped: recipient email not found.', [
+                'interviewId' => $interview->getId(),
+            ]);
+
+            return;
+        }
+
+        $email = (new Email())
+            ->from('no-reply@jobtrack.local')
+            ->to($recipient)
+            ->subject('Rappel : entretien à venir')
+            ->text(sprintf(
+                "Bonjour,\n\nVous avez un entretien prévu le %s pour votre candidature chez %s.\n\nJobTrack",
+                $interview->getScheduledAt()?->format('d/m/Y H:i'),
+                $interview->getApplication()?->getCompany() ?? 'une entreprise'
+            ));
+
+        $this->mailer->send($email);
 
         $interview->setReminderSentAt(new DateTimeImmutable());
 
