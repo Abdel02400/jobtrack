@@ -2,6 +2,8 @@
 
 namespace App\State\Application;
 
+use App\Entity\ApplicationStatusHistory;
+use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Domain\Application\ApplicationStatusTransitionService;
@@ -14,6 +16,7 @@ final readonly class ApplicationUpdateProcessor implements ProcessorInterface
         #[Autowire(service: 'api_platform.doctrine.orm.state.persist_processor')]
         private ProcessorInterface $persistProcessor,
         private ApplicationStatusTransitionService $transitionService,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -45,6 +48,16 @@ final readonly class ApplicationUpdateProcessor implements ProcessorInterface
                 $previousStatus,
                 $newStatus,
             );
+        }
+
+        if ($previousStatus !== null && $newStatus !== null && $previousStatus !== $newStatus) {
+            $history = new ApplicationStatusHistory();
+            $history
+                ->setApplication($data)
+                ->setOldStatus($previousStatus)
+                ->setNewStatus($newStatus);
+
+            $this->entityManager->persist($history);
         }
 
         return $this->persistProcessor->process(

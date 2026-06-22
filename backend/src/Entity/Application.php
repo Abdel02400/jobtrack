@@ -108,10 +108,17 @@ class Application
     #[Groups(['application:read'])]
     private Collection $interviews;
 
+    /**
+     * @var Collection<int, ApplicationStatusHistory>
+     */
+    #[ORM\OneToMany(targetEntity: ApplicationStatusHistory::class, mappedBy: 'application')]
+    private Collection $applicationStatusHistories;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
         $this->interviews = new ArrayCollection();
+        $this->applicationStatusHistories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -252,6 +259,31 @@ class Application
                 $interview->setApplication(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApplicationStatusHistory>
+     */
+    public function getApplicationStatusHistories(): Collection
+    {
+        return $this->applicationStatusHistories;
+    }
+
+    public function addApplicationStatusHistory(ApplicationStatusHistory $applicationStatusHistory): static
+    {
+        if (!$this->applicationStatusHistories->contains($applicationStatusHistory)) {
+            $this->applicationStatusHistories->add($applicationStatusHistory);
+            $applicationStatusHistory->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplicationStatusHistory(ApplicationStatusHistory $applicationStatusHistory): static
+    {
+        $this->applicationStatusHistories->removeElement($applicationStatusHistory);
 
         return $this;
     }
