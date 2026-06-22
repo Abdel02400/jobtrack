@@ -6,7 +6,7 @@ use App\Message\Interview\SendInterviewReminderMessage;
 use App\Repository\InterviewRepository;
 use DateTimeImmutable;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -60,15 +60,15 @@ final readonly class SendInterviewReminderMessageHandler
             return;
         }
 
-        $email = (new Email())
+        $email = (new TemplatedEmail())
             ->from('no-reply@jobtrack.local')
             ->to($recipient)
             ->subject('Rappel : entretien à venir')
-            ->text(sprintf(
-                "Bonjour,\n\nVous avez un entretien prévu le %s pour votre candidature chez %s.\n\nJobTrack",
-                $interview->getScheduledAt()?->format('d/m/Y H:i'),
-                $interview->getApplication()?->getCompany() ?? 'une entreprise'
-            ));
+            ->htmlTemplate('emails/interview_reminder.html.twig')
+            ->context([
+                'interview' => $interview,
+                'application' => $interview->getApplication(),
+            ]);
 
         $this->mailer->send($email);
 

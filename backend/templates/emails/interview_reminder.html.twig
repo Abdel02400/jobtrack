@@ -1,0 +1,20 @@
+<h1>Rappel d'entretien</h1>
+
+<p>Bonjour,</p>
+
+<p>
+    Vous avez un entretien prévu le
+    <strong>{{ interview.scheduledAt|date('d/m/Y à H:i') }}</strong>
+    pour votre candidature chez
+    <strong>{{ application.company }}</strong>.
+</p>
+
+{% if application.title %}
+    <p>Poste : {{ application.title }}</p>
+{% endif %}
+
+<p>
+    Pensez à relire vos notes et à préparer vos questions.
+</p>
+
+<p>À bientôt,<br>JobTrack</p>
