@@ -85,6 +85,18 @@ class ApplicationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function countByStatusForUser(User $user): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a.status AS status')
+            ->addSelect('COUNT(a.id) AS total')
+            ->where('a.user = :user')
+            ->setParameter('user', $user)
+            ->groupBy('a.status')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     //    /**
     //     * @return Application[] Returns an array of Application objects
     //     */

@@ -21,6 +21,7 @@ final readonly class DashboardOutput
         public int $interviews,
         public int $offers,
         public int $rejected,
+        public array $statusSummary,
     ) {
     }
 }
