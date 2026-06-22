@@ -74,6 +74,9 @@ class Interview
     #[Groups(['interview:read'])]
     private ?DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $reminderSentAt = null;
+
     #[ORM\ManyToOne(inversedBy: 'interviews')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['interview:read', 'interview:write'])]
@@ -145,6 +148,18 @@ class Interview
     public function setUpdatedAt(?DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getReminderSentAt(): ?DateTimeImmutable
+    {
+        return $this->reminderSentAt;
+    }
+
+    public function setReminderSentAt(?DateTimeImmutable $reminderSentAt): static
+    {
+        $this->reminderSentAt = $reminderSentAt;
 
         return $this;
     }

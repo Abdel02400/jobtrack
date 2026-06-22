@@ -54,6 +54,7 @@ class InterviewRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('i')
             ->andWhere('i.scheduledAt >= :now')
             ->andWhere('i.scheduledAt <= :tomorrow')
+            ->andWhere('i.reminderSentAt IS NULL')
             ->setParameter('now', $now)
             ->setParameter('tomorrow', $tomorrow)
             ->orderBy('i.scheduledAt', 'ASC')
