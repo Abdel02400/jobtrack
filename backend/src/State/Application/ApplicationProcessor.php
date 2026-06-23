@@ -5,7 +5,9 @@ namespace App\State\Application;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Application;
+use App\Entity\ApplicationStatusHistory;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -15,6 +17,7 @@ final readonly class ApplicationProcessor implements ProcessorInterface
         #[Autowire(service: 'api_platform.doctrine.orm.state.persist_processor')]
         private ProcessorInterface $persistProcessor,
         private Security $security,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -41,6 +44,17 @@ final readonly class ApplicationProcessor implements ProcessorInterface
         }
 
         $data->setUser($user);
+
+        $status = $data->getStatus();
+
+        $history = new ApplicationStatusHistory();
+
+        $history
+            ->setApplication($data)
+            ->setOldStatus($status)
+            ->setNewStatus($status);
+
+        $this->entityManager->persist($history);
 
         return $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }
