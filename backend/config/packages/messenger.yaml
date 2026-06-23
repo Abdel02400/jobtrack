@@ -12,7 +12,7 @@ framework:
         routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
-            App\Message\Interview\SendInterviewReminderMessage: async
+            App\Interview\Message\SendInterviewReminderMessage: async
 
 # when@test:
 #    framework:
