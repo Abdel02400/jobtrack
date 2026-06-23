@@ -2,12 +2,24 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\State\Application\ApplicationStatusHistoryProvider;
 use App\Enum\Application\ApplicationStatus;
 use App\Repository\ApplicationStatusHistoryRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/applications/{id}/history',
+            provider: ApplicationStatusHistoryProvider::class,
+        ),
+    ],
+)]
 #[ORM\Entity(repositoryClass: ApplicationStatusHistoryRepository::class)]
+#[ORM\Table(name: 'applications_status_histories')]
 class ApplicationStatusHistory
 {
     #[ORM\Id]
